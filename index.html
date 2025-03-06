@@ -89,6 +89,13 @@
             margin-top: 1rem;
             display: none;
         }
+
+        .confirmation {
+            margin-top: 1rem;
+            color: #2d3748;
+            font-weight: bold;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -115,37 +122,81 @@
         <p class="instructions">
             Select your preferred time and we'll send you a DM on Instagram at that exact moment!
         </p>
+
+        <p class="confirmation" id="confirmation"></p>
     </div>
 
     <script>
-        document.getElementById('timeForm').addEventListener('submit', function(e) {
+        let subscriberId = null;
+
+        // Fetch the subscriber ID from backend
+        async function getSubscriberId() {
+            try {
+                const response = await fetch("https://timepicker-psi.vercel.app/");  
+                const data = await response.json();
+                if (data.subscriber_id) {
+                    subscriberId = data.subscriber_id;
+                    console.log("Subscriber ID:", subscriberId);
+                }
+            } catch (error) {
+                console.error("Error fetching subscriber ID:", error);
+            }
+        }
+
+        document.getElementById('timeForm').addEventListener('submit', async function (e) {
             e.preventDefault();
             
-            const timeInput = document.getElementById('timePicker');
+            const timeInput = document.getElementById('timePicker').value;
             const errorMessage = document.getElementById('errorMessage');
-            
-            if (!timeInput.value) {
+            const confirmation = document.getElementById('confirmation');
+
+            if (!timeInput) {
                 errorMessage.style.display = 'block';
                 return;
             }
 
             errorMessage.style.display = 'none';
-            
-            // Append time to URL parameters
-            const selectedTime = encodeURIComponent(timeInput.value);
-            window.location.search = `selected_time=${selectedTime}`;
+            confirmation.style.display = 'block';
+            confirmation.textContent = `Your message is scheduled for ${timeInput} ⏳`;
+
+            if (!subscriberId) {
+                confirmation.textContent = "❌ No subscriber ID found!";
+                return;
+            }
+
+            try {
+                const response = await fetch("https://api.manychat.com/fb/sending/sendContent", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer 2043940:49a26ab90ea56799042c69a90e142323"
+                    },
+                    body: JSON.stringify({
+                        "subscriber_id": subscriberId,
+                        "message_tag": "CONFIRMED_EVENT_UPDATE",
+                        "content": {
+                            "type": "text",
+                            "text": `Your message is scheduled for ${timeInput}`
+                        }
+                    })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    console.log("Success:", data);
+                    confirmation.textContent = `✅ Successfully scheduled at ${timeInput}!`;
+                } else {
+                    console.error("Error:", data);
+                    confirmation.textContent = "❌ Failed to schedule.";
+                }
+            } catch (error) {
+                console.error("Network error:", error);
+                confirmation.textContent = "❌ Network issue.";
+            }
         });
 
-        // Optional: Add some animations
-        const inputs = document.querySelectorAll('input');
-        inputs.forEach(input => {
-            input.addEventListener('focus', () => {
-                input.parentElement.style.transform = 'scale(1.02)';
-            });
-            input.addEventListener('blur', () => {
-                input.parentElement.style.transform = 'scale(1)';
-            });
-        });
+        // Fetch subscriber ID when page loads
+        getSubscriberId();
     </script>
 </body>
 </html>
