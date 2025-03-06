@@ -127,20 +127,18 @@
     </div>
 
     <script>
-        let subscriberId = null;
+        // Function to get query parameters from URL
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
 
-        // Fetch the subscriber ID from backend
-        async function getSubscriberId() {
-            try {
-                const response = await fetch("https://timepicker-psi.vercel.app/");  
-                const data = await response.json();
-                if (data.subscriber_id) {
-                    subscriberId = data.subscriber_id;
-                    console.log("Subscriber ID:", subscriberId);
-                }
-            } catch (error) {
-                console.error("Error fetching subscriber ID:", error);
-            }
+        // Get subscriber_id from URL
+        let subscriberId = getQueryParam("subscriber_id");
+        if (subscriberId) {
+            console.log("Subscriber ID:", subscriberId);
+        } else {
+            console.log("No subscriber ID found in URL.");
         }
 
         document.getElementById('timeForm').addEventListener('submit', async function (e) {
@@ -194,9 +192,6 @@
                 confirmation.textContent = "❌ Network issue.";
             }
         });
-
-        // Fetch subscriber ID when page loads
-        getSubscriberId();
     </script>
 </body>
 </html>
