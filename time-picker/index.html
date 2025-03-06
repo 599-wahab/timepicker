@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schedule Your DM - Instagram</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            color: #2d3748;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        .time-picker-container {
+            position: relative;
+            margin: 2rem 0;
+        }
+
+        .time-input {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .time-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        .submit-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-weight: 600;
+        }
+
+        .submit-btn:hover {
+            background: #764ba2;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .instructions {
+            margin-top: 1.5rem;
+            color: #4a5568;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .error-message {
+            color: #e53e3e;
+            margin-top: 1rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📅 Schedule Your Instagram DM</h1>
+        
+        <form id="timeForm">
+            <div class="time-picker-container">
+                <input type="time" 
+                       id="timePicker" 
+                       class="time-input" 
+                       required
+                       min="09:00" 
+                       max="21:00">
+            </div>
+            <div class="error-message" id="errorMessage">
+                Please select a valid time between 9:00 AM and 9:00 PM
+            </div>
+            <button type="submit" class="submit-btn">
+                Set Reminder ⏰
+            </button>
+        </form>
+
+        <p class="instructions">
+            Select your preferred time and we'll send you a DM on Instagram at that exact moment!
+        </p>
+    </div>
+
+    <script>
+        document.getElementById('timeForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const timeInput = document.getElementById('timePicker');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            if (!timeInput.value) {
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            errorMessage.style.display = 'none';
+            
+            // Append time to URL parameters
+            const selectedTime = encodeURIComponent(timeInput.value);
+            window.location.search = `selected_time=${selectedTime}`;
+        });
+
+        // Optional: Add some animations
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                input.parentElement.style.transform = 'scale(1.02)';
+            });
+            input.addEventListener('blur', () => {
+                input.parentElement.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>
