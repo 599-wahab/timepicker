@@ -178,20 +178,6 @@
                 const webhookData = await webhookResponse.json();
                 console.log("Make.com Webhook Response:", webhookData);
 
-                // 2️⃣ Update ManyChat Custom Field
-                const manyChatResponse = await fetch("https://api.manychat.com/fb/subscriber/setCustomField", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "Authorization": "Bearer 2043940:49a26ab90ea56799042c69a90e142323"
-                    },
-                    body: JSON.stringify({
-                        "subscriber_id": subscriberId,
-                        "field_name": "Scheduled_Time",
-                        "field_value": timeInput
-                    })
-                });
-
                 const manyChatData = await manyChatResponse.json();
                 if (manyChatResponse.ok) {
                     console.log("ManyChat Custom Field Updated:", manyChatData);
