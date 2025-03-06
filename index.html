@@ -163,7 +163,23 @@
             }
 
             try {
-                const response = await fetch("https://api.manychat.com/fb/sending/sendContent", {
+                // 1️⃣ Send Data to Make.com Webhook
+                const webhookResponse = await fetch("https://hook.eu2.make.com/x73i5ldxb2s6tfmwrrdy7lnath628n9g", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        "subscriber_id": subscriberId,
+                        "scheduled_time": timeInput
+                    })
+                });
+
+                const webhookData = await webhookResponse.json();
+                console.log("Make.com Webhook Response:", webhookData);
+
+                // 2️⃣ Update ManyChat Custom Field
+                const manyChatResponse = await fetch("https://api.manychat.com/fb/subscriber/setCustomField", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
@@ -171,22 +187,20 @@
                     },
                     body: JSON.stringify({
                         "subscriber_id": subscriberId,
-                        "message_tag": "CONFIRMED_EVENT_UPDATE",
-                        "content": {
-                            "type": "text",
-                            "text": `Your message is scheduled for ${timeInput}`
-                        }
+                        "field_name": "Scheduled_Time",
+                        "field_value": timeInput
                     })
                 });
 
-                const data = await response.json();
-                if (response.ok) {
-                    console.log("Success:", data);
+                const manyChatData = await manyChatResponse.json();
+                if (manyChatResponse.ok) {
+                    console.log("ManyChat Custom Field Updated:", manyChatData);
                     confirmation.textContent = `✅ Successfully scheduled at ${timeInput}!`;
                 } else {
-                    console.error("Error:", data);
-                    confirmation.textContent = "❌ Failed to schedule.";
+                    console.error("ManyChat Error:", manyChatData);
+                    confirmation.textContent = "❌ Failed to update ManyChat.";
                 }
+
             } catch (error) {
                 console.error("Network error:", error);
                 confirmation.textContent = "❌ Network issue.";
