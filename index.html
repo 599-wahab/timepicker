@@ -163,7 +163,6 @@
             }
 
             try {
-                // 1️⃣ Send Data to Make.com Webhook
                 const webhookResponse = await fetch("https://hook.eu2.make.com/x73i5ldxb2s6tfmwrrdy7lnath628n9g", {
                     method: "POST",
                     headers: {
@@ -174,19 +173,17 @@
                         "scheduled_time": timeInput
                     })
                 });
-
-                const webhookData = await webhookResponse.json();
-                console.log("Make.com Webhook Response:", webhookData);
-
-                const manyChatData = await manyChatResponse.json();
-                if (manyChatResponse.ok) {
-                    console.log("ManyChat Custom Field Updated:", manyChatData);
+            
+                const webhookText = await webhookResponse.text(); // Read response as text
+                console.log("Make.com Webhook Response:", webhookText);
+                
+                // Handle response properly
+                if (webhookResponse.ok) {
                     confirmation.textContent = `✅ Successfully scheduled at ${timeInput}!`;
                 } else {
-                    console.error("ManyChat Error:", manyChatData);
-                    confirmation.textContent = "❌ Failed to update ManyChat.";
+                    confirmation.textContent = `❌ Error: ${webhookText}`;
                 }
-
+            
             } catch (error) {
                 console.error("Network error:", error);
                 confirmation.textContent = "❌ Network issue.";
